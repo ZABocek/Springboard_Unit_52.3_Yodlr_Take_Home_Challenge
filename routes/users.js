@@ -5,7 +5,7 @@ var logger = require('../lib/logger');
 var log = logger();
 
 var users = require('../init_data.json').data;
-var curId = _.size(users);
+var curId = _.size(users) + 1;  // start IDs from size+1
 
 /* GET users listing. */
 router.get('/', function(req, res) {
@@ -28,30 +28,37 @@ router.post('/', function(req, res) {
 router.get('/:id', function(req, res, next) {
   var user = users[req.params.id];
   if (!user) {
-    return next();
+    var err = new Error('Not Found');
+    err.status = 404;
+    return next(err);
   }
-  res.json(users[req.params.id]);
+  res.json(user);
 });
 
 /* Delete a user by id */
-router.delete('/:id', function(req, res) {
+router.delete('/:id', function(req, res, next) {
   var user = users[req.params.id];
+  if (!user) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    return next(err);
+  }
   delete users[req.params.id];
-  res.status(204);
+  res.status(204).end();
   log.info('Deleted user', user);
-  res.json(user);
 });
 
 /* Update a user by id */
 router.put('/:id', function(req, res, next) {
   var user = req.body;
-  if (user.id != req.params.id) {
-    return next(new Error('ID paramter does not match body'));
+  if (parseInt(req.params.id, 10) !== user.id) {
+    var err = new Error('ID parameter does not match body');
+    err.status = 400;
+    return next(err);
   }
   users[user.id] = user;
   log.info('Updating user', user);
   res.json(user);
 });
-
 
 module.exports = router;

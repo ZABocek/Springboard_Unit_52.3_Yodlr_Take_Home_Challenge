@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset=utf-8>
+  <meta charset="utf-8">
   <title>Yodlr Admin Page</title>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      fetch('/users')
+        .then(response => response.json())
+        .then(data => {
+          const userList = document.getElementById('user-list');
+          data.forEach(user => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `ID: ${user.id}, Email: ${user.email}, State: ${user.state}`;
+            userList.appendChild(listItem);
+          });
+        });
+    });
+  </script>
 </head>
 <body>
-  List user data here
+  <h1>User Data</h1>
+  <ul id="user-list"></ul>
 </body>
 </html>

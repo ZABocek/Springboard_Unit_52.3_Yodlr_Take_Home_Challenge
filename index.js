@@ -1,7 +1,6 @@
 var debug = require('debug')('frontend-code-challenge');
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('./lib/logger');
@@ -27,14 +26,12 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-// development error handler
-// will print stacktrace
+// error handler
 app.use(function(err, req, res, next) {
   log.error(err);
-  res.status(err.status || 500);
-  res.json({
+  res.status(err.status || 500).json({
     message: err.message,
-    error: err
+    error: process.env.NODE_ENV === 'development' ? err : {}
   });
 });
 
